@@ -1,17 +1,6 @@
 #include "header.h"
 #include <string.h>
-
-typedef struct Task {
-    char* name;
-    long time_until_new;
-    long deadline;
-    long time_needed;
-} Task;
-
-typedef struct Node {
-    Task task;
-    struct Node* next;
-} Node;
+#include <unistd.h>
 
 void add_task(char** name, long time_until_new, long deadline, long time_needed, Node** head) {
     check_task_values(time_until_new, deadline, time_needed);
@@ -97,4 +86,14 @@ int main(int argc, char *argv[]) {
         add_task(&name, time_until_new, deadline, time_needed, &head);
         check_get_nextline(&line, &length, &read, &file);
     }
+
+    fclose(file);
+
+    if (strcmp(argv[1], "rate")) {
+        rate_scheduler(head, total_time);
+    } else {
+        edf_scheduler(head, total_time);
+    }
+    
+    return 0;
 }
