@@ -14,6 +14,8 @@ typedef struct Node {
 } Node;
 
 void add_task(char** name, long time_until_new, long deadline, long time_needed, Node** head) {
+    check_task_values(time_until_new, deadline, time_needed);
+
     Node* temp = *head;
     if (*head == NULL) {
         *head = (Node*) malloc(sizeof(Node));
@@ -30,6 +32,7 @@ void add_task(char** name, long time_until_new, long deadline, long time_needed,
     temp->task.deadline = deadline;
     temp->task.time_needed = time_needed;
     temp->next = NULL;
+
 }
 
 int main(int argc, char *argv[]) {
@@ -84,6 +87,13 @@ int main(int argc, char *argv[]) {
                 time_needed = check_return_integer(string);
             }
         }
+
+        string = strtok(NULL, " \n");
+        if (string != NULL) {
+            fprintf(stderr, "More arguments than expected in task lines\n");
+            exit(EXIT_FAILURE);
+        }
+
         add_task(&name, time_until_new, deadline, time_needed, &head);
         check_get_nextline(&line, &length, &read, &file);
     }

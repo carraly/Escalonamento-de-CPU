@@ -50,3 +50,10 @@ void check_empty_token(char* string) {
         exit(EXIT_FAILURE);
     }
 }
+
+void check_task_values(long time_until_new, long deadline, long time_needed) {
+    if (time_needed > deadline || deadline > time_until_new) {
+        fprintf(stderr, "Incorrect values for new task\n");
+        exit(EXIT_FAILURE);
+    }
+}
