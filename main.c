@@ -1,6 +1,4 @@
 #include "header.h"
-#include <string.h>
-#include <unistd.h>
 
 void add_task(char** name, long time_until_new, long deadline, long time_needed, Node** head) {
     check_task_values(time_until_new, deadline, time_needed);
@@ -89,7 +87,7 @@ int main(int argc, char *argv[]) {
 
     fclose(file);
 
-    if (strcmp(argv[1], "rate")) {
+    if (strcmp(argv[1], "rate") == 0) {
         rate_scheduler(head, total_time);
     } else {
         edf_scheduler(head, total_time);

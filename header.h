@@ -29,6 +29,9 @@ void check_task_values(long time_until_new, long deadline, long time_needed);
 void rate_scheduler(Node* head, long total_time);
 
 // edf.c
-
 void edf_scheduler(Node* head, long total_time);
+
+// math.c
+long calculate_maximum_queue(Node* head, long total_time);
+
 #endif
