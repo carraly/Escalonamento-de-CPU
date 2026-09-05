@@ -1,4 +1,4 @@
-CFLAGS = -Wall -Wextra -g -fopenmp -pthread	
+CFLAGS = -Wall -Wextra -g
 
 scheduler: main.o errors.o
 	gcc $(CFLAGS) -o scheduler $^

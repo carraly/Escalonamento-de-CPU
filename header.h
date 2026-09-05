@@ -7,7 +7,7 @@
 #include <string.h>
 
 // errors.c
-void check_start_errors(int argc, char *argv[], FILE* file);
-void check_integers(char* string);
+void check_start_errors(int argc, char *argv[], FILE** file);
+long check_return_integer(char* string);
 
 #endif

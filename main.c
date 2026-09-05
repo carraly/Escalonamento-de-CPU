@@ -15,7 +15,7 @@ typedef struct Node {
 int main(int argc, char *argv[]) {
     FILE* file;
 
-    check_start_errors(argc, argv, file);
+    check_start_errors(argc, argv, &file);
 
     char* line = NULL;
     size_t length = 0;
@@ -27,8 +27,7 @@ int main(int argc, char *argv[]) {
     }
 
     char* string = strtok(line, " \n");
-    check_integers(string);
-    long total_time = (long)string;
+    long total_time = check_return_integer(string);
     
-    Node* head;
+    Node* head = NULL;
 }
