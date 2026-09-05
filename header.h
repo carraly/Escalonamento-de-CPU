@@ -9,5 +9,6 @@
 // errors.c
 void check_start_errors(int argc, char *argv[], FILE** file);
 long check_return_integer(char* string);
+void check_get_nextline(char** line, size_t* length, ssize_t* read, FILE** file);
 
 #endif

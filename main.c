@@ -21,13 +21,23 @@ int main(int argc, char *argv[]) {
     size_t length = 0;
     ssize_t read;
 
-    if ((read = getline(&line, &length, file)) == -1) {
-        fprintf(stderr, "Failed reading first line\n");
-        exit(EXIT_FAILURE);
-    }
+    check_get_nextline(&line, &length, &read, &file);
 
     char* string = strtok(line, " \n");
     long total_time = check_return_integer(string);
     
+    string = strtok(NULL, " \n");
+    if (string != NULL) {
+        fprintf(stderr, "More arguments than expected in first line\n");
+        exit(EXIT_FAILURE);
+    }
+
     Node* head = NULL;
+    while (read != -1) {
+        check_get_nextline(&line, &length, &read, &file);
+        string = strtok(line, " \n");
+        for (int i = 0; i < 4; i++) {
+            
+        }
+    }
 }

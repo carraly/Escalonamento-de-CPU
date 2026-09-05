@@ -35,3 +35,10 @@ long check_return_integer(char* string) {
 
     return value;
 }
+
+void check_get_nextline(char** line, size_t* length, ssize_t* read, FILE** file) {
+    if ((*read = getline(line, length, *file)) == -1) {
+        fprintf(stderr, "Failed reading line\n");
+        exit(EXIT_FAILURE);
+    }
+}
