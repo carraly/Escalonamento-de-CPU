@@ -1,4 +1,5 @@
 #include "header.h"
+#include <string.h>
 
 typedef struct Task {
     char* name;
@@ -27,7 +28,8 @@ void add_task(char** name, long time_until_new, long deadline, long time_needed,
     temp->task.name = *name;
     temp->task.time_until_new = time_until_new;
     temp->task.deadline = deadline;
-    temp->task.time_needed = time_needed; 
+    temp->task.time_needed = time_needed;
+    temp->next = NULL;
 }
 
 int main(int argc, char *argv[]) {
