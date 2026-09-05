@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
             check_empty_token(string);
             
             if (i == 0) {
-                name = (char*) malloc(strlen(string));
+                name = (char*) malloc(strlen(string) + 1); // strlen não conta o \0
                 strcpy(name, string);
             }else if (i == 1) {
                 time_until_new = check_return_integer(string);
