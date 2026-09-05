@@ -12,6 +12,24 @@ typedef struct Node {
     struct Node* next;
 } Node;
 
+void add_task(char** name, long time_until_new, long deadline, long time_needed, Node** head) {
+    Node* temp = *head;
+    if (*head == NULL) {
+        *head = (Node*) malloc(sizeof(Node));
+        temp = *head;
+    }else {
+        while (temp->next != NULL) {
+            temp = temp->next;
+        }
+        temp->next = (Node*) malloc(sizeof(Node));
+        temp = temp->next;
+    }
+    temp->task.name = *name;
+    temp->task.time_until_new = time_until_new;
+    temp->task.deadline = deadline;
+    temp->task.time_needed = time_needed; 
+}
+
 int main(int argc, char *argv[]) {
     FILE* file;
 
@@ -22,6 +40,10 @@ int main(int argc, char *argv[]) {
     ssize_t read;
 
     check_get_nextline(&line, &length, &read, &file);
+    if (read == -1) {
+        fprintf(stderr, "First line is empty\n");
+        exit(EXIT_FAILURE);
+    }
 
     char* string = strtok(line, " \n");
     long total_time = check_return_integer(string);
@@ -33,11 +55,34 @@ int main(int argc, char *argv[]) {
     }
 
     Node* head = NULL;
+    check_get_nextline(&line, &length, &read, &file);
     while (read != -1) {
-        check_get_nextline(&line, &length, &read, &file);
-        string = strtok(line, " \n");
+        char* name;
+        long time_until_new;
+        long deadline;
+        long time_needed;
+        
         for (int i = 0; i < 4; i++) {
+            if (i == 0) {
+                string = strtok(line, " \n");
+            }else {
+                string = strtok(NULL, " \n");
+            }
+
+            check_empty_token(string);
             
+            if (i == 0) {
+                name = (char*) malloc(strlen(string));
+                strcpy(name, string);
+            }else if (i == 1) {
+                time_until_new = check_return_integer(string);
+            }else if (i == 2) {
+                deadline = check_return_integer(string);
+            }else {
+                time_needed = check_return_integer(string);
+            }
         }
+        add_task(&name, time_until_new, deadline, time_needed, &head);
+        check_get_nextline(&line, &length, &read, &file);
     }
 }

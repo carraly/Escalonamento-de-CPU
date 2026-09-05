@@ -37,8 +37,16 @@ long check_return_integer(char* string) {
 }
 
 void check_get_nextline(char** line, size_t* length, ssize_t* read, FILE** file) {
-    if ((*read = getline(line, length, *file)) == -1) {
+    *read = getline(line, length, *file);
+    if (*read == -1 && !feof(*file)) {
         fprintf(stderr, "Failed reading line\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void check_empty_token(char* string) {
+    if (string == NULL) {
+        fprintf(stderr, "Missing argument in file\n");
         exit(EXIT_FAILURE);
     }
 }
