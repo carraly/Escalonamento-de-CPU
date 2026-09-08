@@ -26,10 +26,10 @@ void check_empty_token(char* string);
 void check_task_values(long time_until_new, long deadline, long time_needed);
 
 // rate.c
-void rate_scheduler(Node* head, long total_time);
+void rate_scheduler(Node* head, long total_time, long max_name);
 
 // edf.c
-void edf_scheduler(Node* head, long total_time);
+void edf_scheduler(Node* head, long total_time, long max_name);
 
 // math.c
 long calculate_maximum_queue(Node* head, long total_time);

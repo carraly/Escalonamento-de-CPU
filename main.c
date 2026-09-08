@@ -46,6 +46,8 @@ int main(int argc, char *argv[]) {
         exit(EXIT_FAILURE);
     }
 
+    long max_name = 0;
+
     Node* head = NULL;
     check_get_nextline(&line, &length, &read, &file);
     while (read != -1) {
@@ -66,6 +68,9 @@ int main(int argc, char *argv[]) {
             if (i == 0) {
                 name = (char*) malloc(strlen(string) + 1); // strlen não conta o \0
                 strcpy(name, string);
+                if (strlen(string) > max_name) {
+                    max_name = strlen(string);
+                }
             }else if (i == 1) {
                 time_until_new = check_return_integer(string);
             }else if (i == 2) {
@@ -88,9 +93,9 @@ int main(int argc, char *argv[]) {
     fclose(file);
 
     if (strcmp(argv[1], "rate") == 0) {
-        rate_scheduler(head, total_time);
+        rate_scheduler(head, total_time, max_name);
     } else {
-        edf_scheduler(head, total_time);
+        edf_scheduler(head, total_time, max_name);
     }
     
     return 0;
