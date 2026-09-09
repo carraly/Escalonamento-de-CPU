@@ -45,12 +45,13 @@ void rate_change_task(char** current_action, char* new_action, long* passed_time
     if (strcmp(*current_action, new_action) == 0) {
         return;
     }
-
-    if (*passed_time-*previous_time > 0) {
+ 
+    long duration = *passed_time - *previous_time;
+    if (duration > 0) {
         if (strcmp(*current_action, "idle") == 0) {
-            fprintf(file, "idle for %ld units\n", *passed_time-*previous_time);
+            fprintf(file, "idle for %ld units\n", duration);
         }else if (mode != 'K') {
-            fprintf(file, "[%s] for %ld units - %c\n", *current_action, *passed_time-*previous_time, mode);
+            fprintf(file, "[%s] for %ld units - %c\n", *current_action, duration, mode);
         }
     }
     
@@ -60,7 +61,8 @@ void rate_change_task(char** current_action, char* new_action, long* passed_time
 
 void rate_scheduler(Node* head, long total_time, long max_name) {
     FILE* file = fopen("rate_vchlm.out", "w");
-
+    fprintf(file, "EXECUTION BY RATE\n");
+ 
     long passed_time = 0;
     long previous_time = 0;
 
@@ -120,7 +122,7 @@ void rate_scheduler(Node* head, long total_time, long max_name) {
         if (tasks_queue->task.time_needed == 0) {
             Node* temp_queue = tasks_queue;
             tasks_queue = tasks_queue->next;
-            free(temp_queue); 
+            free(temp_queue);
             mode = 'F';
             complete_execution++;
         }else {
@@ -129,22 +131,29 @@ void rate_scheduler(Node* head, long total_time, long max_name) {
 
         passed_time++;
     }
-    rate_add_tasks_queue(&tasks_queue, temp->task, passed_time);
-    if (tasks_queue != NULL) {
-        if (tasks_queue->task.time_needed == 0) {
-            mode = 'F';
-            complete_execution++;
-            rate_change_task(&current_action, tasks_queue->task.name, &passed_time, &previous_time, file, mode);
-        }else {
-            temp = tasks_queue;
-            while (temp != NULL) {
-                tasks_queue = temp->next;
-                free(temp);
-                temp = tasks_queue;
-                killed++;           
-            }
+ 
+    long remaining_time = passed_time - previous_time;
+    if (strcmp(current_action, "idle") == 0) {
+        if (remaining_time > 0) {
+            fprintf(file, "idle for %ld units\n", remaining_time);
         }
+    }else if (remaining_time > 0 && mode == 'F') {
+        fprintf(file, "[%s] for %ld units - %c\n", current_action, remaining_time, mode);
     }
-
+ 
+    temp = tasks_queue;
+    while (temp != NULL) {
+        Node* next = temp->next;
+        free(temp);
+        temp = next;
+        killed++;
+    }
+ 
+    fprintf(file, "\n");
+    fprintf(file, "LOST DEADLINES: %ld\n", lost_deadlines);
+    fprintf(file, "COMPLETE EXECUTION: %ld\n", complete_execution);
+    fprintf(file, "KILLED: %ld\n", killed);
+ 
+    free(current_action);
     fclose(file);
 }
