@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
             if (i == 0) {
                 name = (char*) malloc(strlen(string) + 1); // strlen não conta o \0
                 strcpy(name, string);
-                if (strlen(string) > max_name) {
+                if (strlen(string) > (size_t) max_name) {
                     max_name = strlen(string);
                 }
             }else if (i == 1) {

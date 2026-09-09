@@ -70,7 +70,7 @@ long rate_find_task_index(Node* head, char* name) {
  
 void rate_scheduler(Node* head, long total_time, long max_name) {
     FILE* file = fopen("rate_vchlm.out", "w");
-    fprintf(file, "EXECUTION BY RATE\n");
+    fprintf(file, "EXECUTION BY RATE\n\n");
  
     long passed_time = 0;
     long previous_time = 0;
@@ -177,7 +177,7 @@ void rate_scheduler(Node* head, long total_time, long max_name) {
         index++;
     }
  
-    fprintf(file, "COMPLETE EXECUTION\n");
+    fprintf(file, "\nCOMPLETE EXECUTION\n");
     temp = head;
     index = 0;
     while (temp != NULL) {
@@ -186,7 +186,7 @@ void rate_scheduler(Node* head, long total_time, long max_name) {
         index++;
     }
  
-    fprintf(file, "KILLED\n");
+    fprintf(file, "\nKILLED\n");
     temp = head;
     index = 0;
     while (temp != NULL) {
