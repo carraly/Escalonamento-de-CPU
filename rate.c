@@ -42,24 +42,18 @@ void rate_add_tasks_queue(Node** tasks_queue, Task new_task, long passed_time) {
 }
 
 void rate_change_task(char** current_action, char* new_action, long* passed_time, long* previous_time, FILE* file, char mode) {
-    if (*passed_time-*previous_time == 0) {
-        strcpy(*current_action, new_action);
+    if (strcmp(*current_action, new_action) == 0) {
         return;
     }
 
-    if (strcmp(*current_action, new_action) != 0) {
+    if (*passed_time-*previous_time > 0) {
         if (strcmp(*current_action, "idle") == 0) {
             fprintf(file, "idle for %ld units\n", *passed_time-*previous_time);
-            *previous_time = *passed_time;
-            strcpy(*current_action, new_action);
-            return;
+        }else if (mode != 'K') {
+            fprintf(file, "[%s] for %ld units - %c\n", *current_action, *passed_time-*previous_time, mode);
         }
     }
     
-    if (mode != 'K') {
-        fprintf(file, "[%s] for %ld units - %c\n", *current_action, *passed_time-*previous_time, mode);
-    }
-
     *previous_time = *passed_time;
     strcpy(*current_action, new_action);
 }
@@ -135,6 +129,7 @@ void rate_scheduler(Node* head, long total_time, long max_name) {
 
         passed_time++;
     }
+    rate_add_tasks_queue(&tasks_queue, temp->task, passed_time);
     if (tasks_queue != NULL) {
         if (tasks_queue->task.time_needed == 0) {
             mode = 'F';
@@ -146,7 +141,7 @@ void rate_scheduler(Node* head, long total_time, long max_name) {
                 tasks_queue = temp->next;
                 free(temp);
                 temp = tasks_queue;
-                killed++;              
+                killed++;           
             }
         }
     }
