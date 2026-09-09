@@ -59,6 +59,15 @@ void rate_change_task(char** current_action, char* new_action, long* passed_time
     strcpy(*current_action, new_action);
 }
 
+long rate_find_task_index(Node* head, char* name) {
+    long index = 0;
+    while (strcmp(head->task.name, name) != 0) {
+        head = head->next;
+        index++;
+    }
+    return index;
+}
+ 
 void rate_scheduler(Node* head, long total_time, long max_name) {
     FILE* file = fopen("rate_vchlm.out", "w");
     fprintf(file, "EXECUTION BY RATE\n");
@@ -71,14 +80,22 @@ void rate_scheduler(Node* head, long total_time, long max_name) {
     }
     char* current_action = (char*) malloc(max_name * sizeof(char) + 1); // Maldito +1 para caractere nulo, sempre esqueço
     strcpy(current_action, "idle");
-
+ 
+    long num_tasks = 0;
+    Node* counter = head;
+    while (counter != NULL) {
+        num_tasks++;
+        counter = counter->next;
+    }
+ 
+    long* lost_count = (long*) calloc(num_tasks, sizeof(long));
+    long* complete_count = (long*) calloc(num_tasks, sizeof(long));
+    long* killed_count = (long*) calloc(num_tasks, sizeof(long));
+ 
     Node* tasks_queue = NULL;
     Node* temp = head;
     char mode = 'H';
-    long lost_deadlines = 0;
-    long complete_execution = 0;
-    long killed = 0;
-
+ 
     while (passed_time < total_time) {
         temp = head;
         while (temp != NULL) {
@@ -93,16 +110,16 @@ void rate_scheduler(Node* head, long total_time, long max_name) {
             if (passed_time >= temp->task.deadline) {
                 if (temp == tasks_queue) {
                     tasks_queue = temp->next;
+                    lost_count[rate_find_task_index(head, temp->task.name)]++;
                     free(temp);
                     temp = tasks_queue;
                     mode = 'L';
-                    lost_deadlines++;
                     continue;
                 }else {
                     temp2->next = temp->next;
+                    lost_count[rate_find_task_index(head, temp->task.name)]++;
                     free(temp);
                     temp = temp2->next;
-                    lost_deadlines++;
                     continue;
                 }
             }
@@ -122,9 +139,9 @@ void rate_scheduler(Node* head, long total_time, long max_name) {
         if (tasks_queue->task.time_needed == 0) {
             Node* temp_queue = tasks_queue;
             tasks_queue = tasks_queue->next;
+            complete_count[rate_find_task_index(head, temp_queue->task.name)]++;
             free(temp_queue);
             mode = 'F';
-            complete_execution++;
         }else {
             mode = 'H';
         }
@@ -144,16 +161,44 @@ void rate_scheduler(Node* head, long total_time, long max_name) {
     temp = tasks_queue;
     while (temp != NULL) {
         Node* next = temp->next;
+        killed_count[rate_find_task_index(head, temp->task.name)]++;
         free(temp);
         temp = next;
-        killed++;
     }
  
     fprintf(file, "\n");
-    fprintf(file, "LOST DEADLINES: %ld\n", lost_deadlines);
-    fprintf(file, "COMPLETE EXECUTION: %ld\n", complete_execution);
-    fprintf(file, "KILLED: %ld\n", killed);
+ 
+    fprintf(file, "LOST DEADLINES\n");
+    temp = head;
+    long index = 0;
+    while (temp != NULL) {
+        fprintf(file, "[%s] %ld\n", temp->task.name, lost_count[index]);
+        temp = temp->next;
+        index++;
+    }
+ 
+    fprintf(file, "COMPLETE EXECUTION\n");
+    temp = head;
+    index = 0;
+    while (temp != NULL) {
+        fprintf(file, "[%s] %ld\n", temp->task.name, complete_count[index]);
+        temp = temp->next;
+        index++;
+    }
+ 
+    fprintf(file, "KILLED\n");
+    temp = head;
+    index = 0;
+    while (temp != NULL) {
+        fprintf(file, "[%s] %ld\n", temp->task.name, killed_count[index]);
+        temp = temp->next;
+        index++;
+    }
  
     free(current_action);
+    free(lost_count);
+    free(complete_count);
+    free(killed_count);
+ 
     fclose(file);
 }
