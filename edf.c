@@ -1,6 +1,22 @@
 #include "header.h"
 
-void edf_add_tasks_queue(Node** tasks_queue, Task new_task, long passed_time) {
+long edf_find_task_index(Node* head, char* name) {
+    long index = 0;
+    while (strcmp(head->task.name, name) != 0) {
+        head = head->next;
+        index++;
+    }
+    return index;
+}
+
+int edf_has_priority(Node* head, char* new_name, long new_deadline, Task existing) {
+    if (new_deadline != existing.deadline) {
+        return new_deadline < existing.deadline;
+    }
+    return edf_find_task_index(head, new_name) < edf_find_task_index(head, existing.name);
+}
+
+void edf_add_tasks_queue(Node** tasks_queue, Task new_task, long passed_time, Node* head) {
 
     if (*tasks_queue == NULL) {
         *tasks_queue = (Node*) malloc(sizeof(Node));
@@ -9,8 +25,10 @@ void edf_add_tasks_queue(Node** tasks_queue, Task new_task, long passed_time) {
         return;
     }
 
+    long new_absolute_deadline = new_task.deadline + passed_time;
+
     Node* last = *tasks_queue;
-    if (new_task.time_until_new < last->task.time_until_new) {
+    if (edf_has_priority(head, new_task.name, new_absolute_deadline, last->task)) {
         *tasks_queue = (Node*) malloc(sizeof(Node));
         (*tasks_queue)->task = new_task;
         (*tasks_queue)->task.deadline += passed_time;
@@ -19,7 +37,7 @@ void edf_add_tasks_queue(Node** tasks_queue, Task new_task, long passed_time) {
         }
 
     while (last->next != NULL) {
-        if (new_task.time_until_new < last->next->task.time_until_new) {
+        if (edf_has_priority(head, new_task.name, new_absolute_deadline, last->next->task)) {
             break;
         }
         last = last->next;
@@ -59,15 +77,6 @@ void edf_change_task(char** current_action, char* new_action, long* passed_time,
     strcpy(*current_action, new_action);
 }
 
-long edf_find_task_index(Node* head, char* name) {
-    long index = 0;
-    while (strcmp(head->task.name, name) != 0) {
-        head = head->next;
-        index++;
-    }
-    return index;
-}
- 
 void edf_scheduler(Node* head, long total_time, long max_name) {
     FILE* file = fopen("edf_vchlm.out", "w");
     fprintf(file, "EXECUTION BY EDF\n\n");
@@ -100,7 +109,7 @@ void edf_scheduler(Node* head, long total_time, long max_name) {
         temp = head;
         while (temp != NULL) {
             if (passed_time == 0 || passed_time % temp->task.time_until_new == 0) {
-                edf_add_tasks_queue(&tasks_queue, temp->task, passed_time);
+                edf_add_tasks_queue(&tasks_queue, temp->task, passed_time, head);
             }
             temp = temp->next;
         }
