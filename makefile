@@ -1,6 +1,6 @@
 CFLAGS = -Wall -Wextra -g
 
-scheduler: main.o errors.o rate.o
+scheduler: main.o errors.o rate.o edf.o
 	gcc $(CFLAGS) -o scheduler $^
 
 %.o: %.c header.h

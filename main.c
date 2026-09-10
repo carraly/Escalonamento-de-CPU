@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
     }
 
     char* string = strtok(line, " \n");
+    check_empty_token(string);
     long total_time = check_return_integer(string);
     
     string = strtok(NULL, " \n");
@@ -96,6 +97,14 @@ int main(int argc, char *argv[]) {
         rate_scheduler(head, total_time, max_name);
     } else {
         edf_scheduler(head, total_time, max_name);
+    }
+
+    free(line);
+    while (head != NULL) {
+        Node* next = head->next;
+        free(head->task.name);
+        free(head);
+        head = next;
     }
     
     return 0;

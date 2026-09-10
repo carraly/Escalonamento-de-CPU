@@ -75,7 +75,7 @@ void rate_scheduler(Node* head, long total_time, long max_name) {
     long passed_time = 0;
     long previous_time = 0;
 
-    if (max_name < strlen("idle")) {
+    if ((size_t) max_name < strlen("idle")) {
         max_name = strlen("idle");
     }
     char* current_action = (char*) malloc(max_name * sizeof(char) + 1); // Maldito +1 para caractere nulo, sempre esqueço
